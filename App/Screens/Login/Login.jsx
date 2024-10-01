@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import styles from './LoginStyles';
+import LoginStyles from './LoginStyles';
 import ScreenLayout from '../ScreenLayout/ScreenLayout';
 
 const Login = () => {
@@ -26,22 +26,22 @@ const Login = () => {
 
   return (
     <ScreenLayout>
-        <View style={styles.container}>
-        <Text style={styles.title}>
+        <View style={LoginStyles.container}>
+        <Text style={LoginStyles.title}>
             {isLoggedIn ? `Xin chào ${username}` : 'Đăng nhập'}
         </Text>
 
         {!isLoggedIn && (
             <>
             <TextInput
-                style={styles.input}
+                style={LoginStyles.input}
                 placeholder="Tên đăng nhập"
                 value={username}
                 onChangeText={setUsername}
             />
 
             <TextInput
-                style={styles.input}
+                style={LoginStyles.input}
                 placeholder="Mật khẩu"
                 secureTextEntry={true}
                 value={password}
@@ -51,15 +51,24 @@ const Login = () => {
         )}
 
         <TouchableOpacity
-            style={styles.buttonContainer}
+            style={LoginStyles.buttonContainer}
             onPress={handleLoginLogout}
         >
-            <View style={styles.button}>
-            <Text style={styles.buttonText}>
+            <View style={LoginStyles.button}>
+            <Text style={LoginStyles.buttonText}>
                 {isLoggedIn ? 'Đăng xuất' : 'Đăng nhập'}
             </Text>
             </View>
         </TouchableOpacity>
+
+        <TouchableOpacity 
+        style={LoginStyles.registerButton} 
+        onPress={() => navigation.navigate('Register')}
+        >
+        <Text style={LoginStyles.registerButtonText}>Don't have an account? Register</Text>
+        </TouchableOpacity>
+
+
         </View>
     </ScreenLayout>
 
