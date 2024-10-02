@@ -12,7 +12,7 @@ const HomeScreen = ({ navigation }) => {
         <View style={styles.row}>
           <TouchableOpacity
             style={styles.card}
-            onPress={() => navigation.navigate('QuyHoachMap')}  // Thay thế bằng tên màn hình
+            onPress={() => navigation.navigate('Bản đồ quy hoạch')}
           >
             <Text style={styles.cardText}>Bản đồ quy hoạch</Text>
           </TouchableOpacity>
