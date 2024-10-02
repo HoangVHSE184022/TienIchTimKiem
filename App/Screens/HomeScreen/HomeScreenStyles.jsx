@@ -38,6 +38,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
   },
+  image: {
+    width: '100%',
+    height: 70, // Điều chỉnh chiều cao tùy ý
+    resizeMode: 'contain',
+    marginBottom: 0,
+  },
 });
 
 export default styles;
