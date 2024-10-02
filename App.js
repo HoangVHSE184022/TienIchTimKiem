@@ -13,6 +13,7 @@ import UserGuide from './App/Screens/UserGuide/UserGuide';
 import Profile from './App/Screens/Profile/Profile';
 import ChangeEmail from './App/Screens/ChangeEmail/ChangeEmail';
 import ChangePassword from './App/Screens/ChangePassword/ChangePassword';
+import Map from './App/Screens/Map/Map';
 import 'react-native-gesture-handler';
 
 const Drawer = createDrawerNavigator();
@@ -69,6 +70,8 @@ export default function App() {
       >
         {/* Trang Home */}
         <Drawer.Screen name="Trang chủ" component={HomeScreen} />
+
+        <Drawer.Screen name="Bản đồ quy hoạch" component={Map} />
         
         {/* Trang About Us */}
         <Drawer.Screen name="Về chúng tôi" component={AboutUs}/>
