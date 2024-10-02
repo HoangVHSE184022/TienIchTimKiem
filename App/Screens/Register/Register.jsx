@@ -4,6 +4,7 @@ import RegisterStyles from './RegisterStyles';
 import ScreenLayout from '../ScreenLayout/ScreenLayout';
 
 export default function Register({ navigation }) {
+  const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -38,6 +39,12 @@ export default function Register({ navigation }) {
     <ScreenLayout>
       <View style={RegisterStyles.container}>
         <Text style={RegisterStyles.title}>Đăng ký</Text>
+        <TextInput
+          style={RegisterStyles.input}
+          placeholder="Tên hiển thị"
+          value={name}
+          onChangeText={setName}
+        />
         <TextInput
           style={RegisterStyles.input}
           placeholder="Tên đăng nhập"
