@@ -1,114 +1,27 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from './App/Screens/HomeScreen/HomeScreen';
 import AboutUs from './App/Screens/AboutUs/AboutUs';
 import Login from './App/Screens/Login/Login';
-import Register from './App/Screens/Register/Register';
-import TermsOfService from './App/Screens/TermsOfService/TermsOfService';
-import PrivacyPolicy from './App/Screens/PrivacyPolicy/PrivacyPolicy';
-import UserGuide from './App/Screens/UserGuide/UserGuide';
-import Profile from './App/Screens/Profile/Profile';
-import ChangeEmail from './App/Screens/ChangeEmail/ChangeEmail';
-import ChangePassword from './App/Screens/ChangePassword/ChangePassword';
 import 'react-native-gesture-handler';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 
 const Drawer = createDrawerNavigator();
-const Stack = createStackNavigator();
-
-// Stack cho phần login và đăng ký
-function AuthStack({ setIsLoggedIn }) {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Đăng nhập">
-        {props => <Login {...props} setIsLoggedIn={setIsLoggedIn} />}
-      </Stack.Screen>
-      <Stack.Screen name="Đăng ký" component={Register} />
-    </Stack.Navigator>
-  );
-}
-
-// Custom Drawer Content để thêm nút đăng xuất
-function CustomDrawerContent(props) {
-  return (
-    <DrawerContentScrollView {...props}>
-      <DrawerItemList {...props} />
-      {props.isLoggedIn && (
-        <TouchableOpacity
-          style={{
-            backgroundColor: 'red',
-            padding: 10,
-            margin: 10,
-            borderRadius: 5,
-          }}
-          onPress={props.handleLogout}
-        >
-          <Text style={{ color: 'white', textAlign: 'center' }}>Đăng xuất</Text>
-        </TouchableOpacity>
-      )}
-    </DrawerContentScrollView>
-  );
-}
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  // Hàm đăng xuất
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-  };
-
   return (
     <NavigationContainer>
-      <Drawer.Navigator
-        drawerContent={(props) => (
-          <CustomDrawerContent {...props} isLoggedIn={isLoggedIn} handleLogout={handleLogout} />
-        )}
-      >
-        {/* Trang Home */}
-        <Drawer.Screen name="Trang chủ" component={HomeScreen} />
-        
-        {/* Trang About Us */}
-        <Drawer.Screen name="Về chúng tôi" component={AboutUs}/>
 
-        {/* Trang Terms of Service */}
-        <Drawer.Screen name="Điều khoản dịch vụ" component={TermsOfService} />
-
-        {/* Trang Privacy Policy */}
-        <Drawer.Screen name="Chính sách quyền riêng tư" component={PrivacyPolicy} />
-
-        {/* Trang User Guide */}
-        <Drawer.Screen name="Hướng dẫn sử dụng" component={UserGuide} />
-
-        {/* Điều kiện để hiển thị Profile hoặc Login */}
-        {isLoggedIn ? (
-          <Drawer.Screen name="Thông tin cá nhân" component={Profile} />
-        ) : (
-          <Drawer.Screen name="Đăng nhập">
-            {props => <AuthStack {...props} setIsLoggedIn={setIsLoggedIn} />}
-          </Drawer.Screen>
-        )}
-
-        {/* Các màn hình không hiển thị trong menu */}
-        <Drawer.Screen 
-          name="ChangePassword" 
-          component={ChangePassword} 
-          options={{ 
-            drawerItemStyle: { display: 'none' },
-            title: 'Đổi mật khẩu'
-          }}
-        />
-        <Drawer.Screen 
-          name="ChangeEmail" 
-          component={ChangeEmail} 
-          options={{ 
-            drawerItemStyle: { display: 'none' },
-            title: 'Đổi email'
-          }}
-        />
+      <Drawer.Navigator>
+        <Drawer.Screen name="Home" component={HomeScreen} />
+        <Drawer.Screen name="About Us" component={AboutUs} />
+        <Drawer.Screen name="Login" component={Login} />
       </Drawer.Navigator>
+
     </NavigationContainer>
   );
 }
+
