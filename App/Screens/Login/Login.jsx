@@ -66,7 +66,7 @@ const Login = ({ setIsLoggedIn: setAppLoggedIn }) => {
         {!isLoggedIn && (
           <TouchableOpacity 
             style={LoginStyles.registerButton} 
-            onPress={() => navigation.navigate('Register')}
+            onPress={() => navigation.navigate('Đăng ký')}
           >
             <Text style={LoginStyles.registerButtonText}>
               Chưa có tài khoản? Đăng ký

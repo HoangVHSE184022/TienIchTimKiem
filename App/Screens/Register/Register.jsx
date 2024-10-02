@@ -72,7 +72,7 @@ export default function Register({ navigation }) {
         </View>
         <TouchableOpacity 
           style={RegisterStyles.backToLoginButton} 
-          onPress={() => navigation.navigate('Login')}
+          onPress={() => navigation.navigate('Đăng nhập')}
         >
           <Text style={RegisterStyles.backToLoginText}>Đã có tài khoản? Đăng nhập</Text>
         </TouchableOpacity>
