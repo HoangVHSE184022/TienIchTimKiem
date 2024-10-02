@@ -14,6 +14,7 @@ import Profile from './App/Screens/Profile/Profile';
 import ChangeEmail from './App/Screens/ChangeEmail/ChangeEmail';
 import ChangePassword from './App/Screens/ChangePassword/ChangePassword';
 import Map from './App/Screens/Map/Map';
+import ErrorScreen from './App/Screens/Error/Error';
 import 'react-native-gesture-handler';
 
 const Drawer = createDrawerNavigator();
@@ -53,6 +54,13 @@ function CustomDrawerContent(props) {
   );
 }
 
+// Hàm tạo màn hình chưa phát triển
+const createUnderDevelopmentScreen = (message) => {
+  return ({ navigation }) => (
+    <ErrorScreen navigation={navigation} route={{ params: { message } }} />
+  );
+};
+
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -71,8 +79,23 @@ export default function App() {
         {/* Trang Home */}
         <Drawer.Screen name="Trang chủ" component={HomeScreen} />
 
+        {/* Trang Bản đồ quy hoạch */}
         <Drawer.Screen name="Bản đồ quy hoạch" component={Map} />
-        
+
+        {/* Trang Nghĩa trang liệt sĩ */}  
+        <Drawer.Screen 
+          name="Nghĩa trang liệt sĩ" 
+          component={createUnderDevelopmentScreen('Trang Nghĩa trang liệt sĩ đang được phát triển')} 
+          options={{ title: 'Nghĩa trang liệt sĩ' }} 
+        />
+
+        {/* Trang Bản đồ cá nhân */}
+        <Drawer.Screen 
+          name="Bản đồ cá nhân" 
+          component={createUnderDevelopmentScreen('Trang Bản đồ cá nhân đang được phát triển')} 
+          options={{ title: 'Bản đồ cá nhân' }} 
+        />
+
         {/* Trang About Us */}
         <Drawer.Screen name="Về chúng tôi" component={AboutUs}/>
 
@@ -109,6 +132,14 @@ export default function App() {
           options={{ 
             drawerItemStyle: { display: 'none' },
             title: 'Đổi email'
+          }}
+        />
+        <Drawer.Screen 
+          name="Error" 
+          component={ErrorScreen} 
+          options={{ 
+            drawerItemStyle: { display: 'none' },
+            title: 'Lỗi'
           }}
         />
       </Drawer.Navigator>
