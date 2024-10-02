@@ -10,6 +10,9 @@ import Register from './App/Screens/Register/Register';
 import TermsOfService from './App/Screens/TermsOfService/TermsOfService';
 import PrivacyPolicy from './App/Screens/PrivacyPolicy/PrivacyPolicy';
 import UserGuide from './App/Screens/UserGuide/UserGuide';
+import Profile from './App/Screens/Profile/Profile';
+import ChangeEmail from './App/Screens/ChangeEmail/ChangeEmail';
+import ChangePassword from './App/Screens/ChangePassword/ChangePassword';
 import 'react-native-gesture-handler';
 
 const Drawer = createDrawerNavigator();
@@ -81,12 +84,30 @@ export default function App() {
 
         {/* Điều kiện để hiển thị Profile hoặc Login */}
         {isLoggedIn ? (
-          <Drawer.Screen name="Thông tin cá nhân" component={HomeScreen} />
+          <Drawer.Screen name="Thông tin cá nhân" component={Profile} />
         ) : (
           <Drawer.Screen name="Đăng nhập">
             {props => <AuthStack {...props} setIsLoggedIn={setIsLoggedIn} />}
           </Drawer.Screen>
         )}
+
+        {/* Các màn hình không hiển thị trong menu */}
+        <Drawer.Screen 
+          name="ChangePassword" 
+          component={ChangePassword} 
+          options={{ 
+            drawerItemStyle: { display: 'none' },
+            title: 'Đổi mật khẩu'
+          }}
+        />
+        <Drawer.Screen 
+          name="ChangeEmail" 
+          component={ChangeEmail} 
+          options={{ 
+            drawerItemStyle: { display: 'none' },
+            title: 'Đổi email'
+          }}
+        />
       </Drawer.Navigator>
     </NavigationContainer>
   );

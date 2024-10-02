@@ -22,7 +22,7 @@ const Login = ({ setIsLoggedIn: setAppLoggedIn }) => {
       // Thêm logic kiểm tra đăng nhập ở đây nếu cần
       setIsLoggedIn(true);
       setAppLoggedIn(true);
-      navigation.navigate('Home');
+      navigation.navigate('Trang chủ');
     }
   };
 
