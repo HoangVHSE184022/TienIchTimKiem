@@ -44,6 +44,10 @@ const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 5, // Tùy chỉnh khoảng cách giữa copyright và quảng cáo
   },
+  link: {
+    color: 'blue',
+    textDecorationLine: 'underline',
+  },
 });
 
 export default styles;

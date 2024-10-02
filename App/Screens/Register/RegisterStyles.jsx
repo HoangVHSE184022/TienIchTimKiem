@@ -1,10 +1,11 @@
 import { StyleSheet } from 'react-native';
 
-const LoginStyles = StyleSheet.create({
+const RegisterStyles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 20,
+    backgroundColor: '#f5f5f5',
     justifyContent: 'center',
-    padding: 16,
   },
   title: {
     fontSize: 24,
@@ -18,29 +19,30 @@ const LoginStyles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 16,
     paddingLeft: 10,
-    borderRadius: 5,  // Bo tròn góc
+    borderRadius: 5,
   },
   buttonContainer: {
-    marginTop: 16,
+    marginTop: 20,
   },
   button: {
-    backgroundColor: '#007bff',
-    paddingVertical: 12,
+    backgroundColor: '#007BFF',
+    padding: 10,
     borderRadius: 5,
     alignItems: 'center',
   },
   buttonText: {
-    color: '#fff',
-    fontSize: 16,
-  },
-  registerButton: {
-    marginTop: 20,
-  },
-  registerButtonText: {
-    color: '#007BFF',
+    color: '#ffffff',
     textAlign: 'center',
+    fontSize: 18,
+  },
+  backToLoginButton: {
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  backToLoginText: {
+    color: '#007BFF',
     fontSize: 16,
   },
 });
 
-export default LoginStyles;
+export default RegisterStyles;

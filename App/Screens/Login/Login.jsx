@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import styles from './LoginStyles';
+import LoginStyles from './LoginStyles';
 import ScreenLayout from '../ScreenLayout/ScreenLayout';
 
-const Login = () => {
+const Login = ({ setIsLoggedIn: setAppLoggedIn }) => {
   const navigation = useNavigation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -14,55 +14,67 @@ const Login = () => {
     if (isLoggedIn) {
       // Đăng xuất
       setIsLoggedIn(false);
+      setAppLoggedIn(false);
       setUsername('');
       setPassword('');
     } else {
       // Đăng nhập
       // Thêm logic kiểm tra đăng nhập ở đây nếu cần
       setIsLoggedIn(true);
-      navigation.navigate('Home');
+      setAppLoggedIn(true);
+      navigation.navigate('Trang chủ');
     }
   };
 
   return (
     <ScreenLayout>
-        <View style={styles.container}>
-        <Text style={styles.title}>
-            {isLoggedIn ? `Xin chào ${username}` : 'Đăng nhập'}
+      <View style={LoginStyles.container}>
+        <Text style={LoginStyles.title}>
+          {isLoggedIn ? `Xin chào ${username}` : 'Đăng nhập'}
         </Text>
 
         {!isLoggedIn && (
-            <>
+          <>
             <TextInput
-                style={styles.input}
-                placeholder="Tên đăng nhập"
-                value={username}
-                onChangeText={setUsername}
+              style={LoginStyles.input}
+              placeholder="Tên đăng nhập"
+              value={username}
+              onChangeText={setUsername}
             />
 
             <TextInput
-                style={styles.input}
-                placeholder="Mật khẩu"
-                secureTextEntry={true}
-                value={password}
-                onChangeText={setPassword}
+              style={LoginStyles.input}
+              placeholder="Mật khẩu"
+              secureTextEntry={true}
+              value={password}
+              onChangeText={setPassword}
             />
-            </>
+          </>
         )}
 
         <TouchableOpacity
-            style={styles.buttonContainer}
-            onPress={handleLoginLogout}
+          style={LoginStyles.buttonContainer}
+          onPress={handleLoginLogout}
         >
-            <View style={styles.button}>
-            <Text style={styles.buttonText}>
-                {isLoggedIn ? 'Đăng xuất' : 'Đăng nhập'}
+          <View style={LoginStyles.button}>
+            <Text style={LoginStyles.buttonText}>
+              {isLoggedIn ? 'Đăng xuất' : 'Đăng nhập'}
             </Text>
-            </View>
+          </View>
         </TouchableOpacity>
-        </View>
-    </ScreenLayout>
 
+        {!isLoggedIn && (
+          <TouchableOpacity 
+            style={LoginStyles.registerButton} 
+            onPress={() => navigation.navigate('Đăng ký')}
+          >
+            <Text style={LoginStyles.registerButtonText}>
+              Chưa có tài khoản? Đăng ký
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    </ScreenLayout>
   );
 };
 
