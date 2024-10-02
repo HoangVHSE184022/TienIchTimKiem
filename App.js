@@ -7,22 +7,27 @@ import HomeScreen from './App/Screens/HomeScreen/HomeScreen';
 import AboutUs from './App/Screens/AboutUs/AboutUs';
 import Login from './App/Screens/Login/Login';
 import Register from './App/Screens/Register/Register';
+import TermsOfService from './App/Screens/TermsOfService/TermsOfService';
+import PrivacyPolicy from './App/Screens/PrivacyPolicy/PrivacyPolicy';
+import UserGuide from './App/Screens/UserGuide/UserGuide';
 import 'react-native-gesture-handler';
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
+// Stack cho phần login và đăng ký
 function AuthStack({ setIsLoggedIn }) {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Login">
+      <Stack.Screen name="Đăng nhập">
         {props => <Login {...props} setIsLoggedIn={setIsLoggedIn} />}
       </Stack.Screen>
-      <Stack.Screen name="Register" component={Register} />
+      <Stack.Screen name="Đăng ký" component={Register} />
     </Stack.Navigator>
   );
 }
 
+// Custom Drawer Content để thêm nút đăng xuất
 function CustomDrawerContent(props) {
   return (
     <DrawerContentScrollView {...props}>
@@ -47,6 +52,7 @@ function CustomDrawerContent(props) {
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  // Hàm đăng xuất
   const handleLogout = () => {
     setIsLoggedIn(false);
   };
@@ -58,12 +64,26 @@ export default function App() {
           <CustomDrawerContent {...props} isLoggedIn={isLoggedIn} handleLogout={handleLogout} />
         )}
       >
-        <Drawer.Screen name="Home" component={HomeScreen} />
-        <Drawer.Screen name="About Us" component={AboutUs} />
+        {/* Trang Home */}
+        <Drawer.Screen name="Trang chủ" component={HomeScreen} />
+        
+        {/* Trang About Us */}
+        <Drawer.Screen name="Về chúng tôi" component={AboutUs}/>
+
+        {/* Trang Terms of Service */}
+        <Drawer.Screen name="Điều khoản dịch vụ" component={TermsOfService} />
+
+        {/* Trang Privacy Policy */}
+        <Drawer.Screen name="Chính sách quyền riêng tư" component={PrivacyPolicy} />
+
+        {/* Trang User Guide */}
+        <Drawer.Screen name="Hướng dẫn sử dụng" component={UserGuide} />
+
+        {/* Điều kiện để hiển thị Profile hoặc Login */}
         {isLoggedIn ? (
-          <Drawer.Screen name="Profile" component={HomeScreen} />
+          <Drawer.Screen name="Thông tin cá nhân" component={HomeScreen} />
         ) : (
-          <Drawer.Screen name="Login">
+          <Drawer.Screen name="Đăng nhập">
             {props => <AuthStack {...props} setIsLoggedIn={setIsLoggedIn} />}
           </Drawer.Screen>
         )}
@@ -71,4 +91,3 @@ export default function App() {
     </NavigationContainer>
   );
 }
-

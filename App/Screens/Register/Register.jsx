@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import RegisterStyles from './RegisterStyles';
+import ScreenLayout from '../ScreenLayout/ScreenLayout';
 
 export default function Register({ navigation }) {
   const [username, setUsername] = useState('');
@@ -34,46 +35,48 @@ export default function Register({ navigation }) {
   };
 
   return (
-    <View style={RegisterStyles.container}>
-      <Text style={RegisterStyles.title}>Đăng ký</Text>
-      <TextInput
-        style={RegisterStyles.input}
-        placeholder="Tên đăng nhập"
-        value={username}
-        onChangeText={setUsername}
-      />
-      <TextInput
-        style={RegisterStyles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-      />
-      <TextInput
-        style={RegisterStyles.input}
-        placeholder="Mật khẩu"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <TextInput
-        style={RegisterStyles.input}
-        placeholder="Xác nhận mật khẩu"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        secureTextEntry
-      />
-      <View style={RegisterStyles.buttonContainer}>
-        <TouchableOpacity style={RegisterStyles.button} onPress={handleRegister}>
-          <Text style={RegisterStyles.buttonText}>Đăng ký</Text>
+    <ScreenLayout>
+      <View style={RegisterStyles.container}>
+        <Text style={RegisterStyles.title}>Đăng ký</Text>
+        <TextInput
+          style={RegisterStyles.input}
+          placeholder="Tên đăng nhập"
+          value={username}
+          onChangeText={setUsername}
+        />
+        <TextInput
+          style={RegisterStyles.input}
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+        />
+        <TextInput
+          style={RegisterStyles.input}
+          placeholder="Mật khẩu"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
+        <TextInput
+          style={RegisterStyles.input}
+          placeholder="Xác nhận mật khẩu"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          secureTextEntry
+        />
+        <View style={RegisterStyles.buttonContainer}>
+          <TouchableOpacity style={RegisterStyles.button} onPress={handleRegister}>
+            <Text style={RegisterStyles.buttonText}>Đăng ký</Text>
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity 
+          style={RegisterStyles.backToLoginButton} 
+          onPress={() => navigation.navigate('Login')}
+        >
+          <Text style={RegisterStyles.backToLoginText}>Đã có tài khoản? Đăng nhập</Text>
         </TouchableOpacity>
       </View>
-      <TouchableOpacity 
-        style={RegisterStyles.backToLoginButton} 
-        onPress={() => navigation.navigate('Login')}
-      >
-        <Text style={RegisterStyles.backToLoginText}>Đã có tài khoản? Đăng nhập</Text>
-      </TouchableOpacity>
-    </View>
+    </ScreenLayout>
   );
 }
