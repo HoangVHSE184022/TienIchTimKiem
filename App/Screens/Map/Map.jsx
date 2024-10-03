@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import MapView, { Marker, UrlTile } from 'react-native-maps';
 import Slider from '@react-native-community/slider';
 import SwitchToggle from 'react-native-switch-toggle';
+import Geolocation from 'react-native-geolocation-service'; // Import Geolocation
 import axios from 'axios';
 import styles from './MapStyles';
 import ScreenLayout from '../ScreenLayout/ScreenLayout';
@@ -13,13 +14,28 @@ const Map = ({ navigation }) => {
   const [showMbtiles, setShowMbtiles] = useState(true);
   const [marker, setMarker] = useState(null); // State for marker
   const [showMarker, setShowMarker] = useState(true); // State to toggle marker visibility
+  const [userLocation, setUserLocation] = useState(null); // State for user location
 
   useEffect(() => {
     fetchMapData();
+    getUserLocation(); // Fetch user location on mount
   }, []);
 
   const fetchMapData = async () => {
     // ... existing code to fetch map data ...
+  };
+
+  const getUserLocation = () => { // Function to get user location
+    Geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setUserLocation({ latitude, longitude }); // Set user location
+      },
+      (error) => {
+        console.error('Error getting location:', error);
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+    );
   };
 
   const handleMapPress = (event) => { 
@@ -115,6 +131,13 @@ const Map = ({ navigation }) => {
             <Marker
               coordinate={marker.coordinate}
               title={marker.title} // Display lat and lon as title
+            />
+          )}
+          {userLocation && ( // Render user's current location
+            <Marker
+              coordinate={userLocation}
+              title="Your Location"
+              pinColor="blue" // Change color for user location marker
             />
           )}
         </MapView>
