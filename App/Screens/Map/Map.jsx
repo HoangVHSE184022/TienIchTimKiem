@@ -6,14 +6,16 @@ import SwitchToggle from 'react-native-switch-toggle';
 import axios from 'axios';
 import styles from './MapStyles';
 import ScreenLayout from '../ScreenLayout/ScreenLayout';
+import Geolocation from 'react-native-geolocation-service'; // {{ edit_1 }}
 
 const Map = ({ navigation }) => {
   const [mapData, setMapData] = useState(null);
-  const [mbtilesOpacity, setMbtilesOpacity] = useState(1);
-  const [showMbtiles, setShowMbtiles] = useState(true);
+  const [marker, setMarker] = useState(null); 
+  const [userLocation, setUserLocation] = useState(null); // {{ edit_2 }}
 
   useEffect(() => {
     fetchMapData();
+    getUserLocation(); // Fetch user location on mount
   }, []);
 
   const fetchMapData = async () => {
@@ -29,39 +31,38 @@ const Map = ({ navigation }) => {
     }
   };
 
+  const getUserLocation = () => { // {{ edit_3 }}
+    Geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setUserLocation({ latitude, longitude }); // Set user location
+      },
+      (error) => {
+        console.error('Error getting location:', error);
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+    );
+  };
+
+  const handleMapPress = (event) => { 
+    const { coordinate } = event.nativeEvent;
+    if (marker && marker.latitude === coordinate.latitude && marker.longitude === coordinate.longitude) {
+      setMarker(null); // Remove marker if tapped again
+    } else {
+      setMarker(coordinate); // Set new marker
+    }
+  };
+
+  const handleMarkerPress = () => {
+    if (marker) {
+      alert(`Lat: ${marker.latitude.toFixed(6)}, Lon: ${marker.longitude.toFixed(6)}`);
+    }
+  };
+
   return (
     <ScreenLayout>  
       <View style={styles.container}>
-        <View style={styles.headerContainer}>
-          <Text style={styles.title}>Bản đồ quận Ba Đình</Text>
-          <SwitchToggle
-            switchOn={showMbtiles}
-            onPress={() => setShowMbtiles(!showMbtiles)}
-            containerStyle={styles.toggleSwitch}
-            circleStyle={styles.toggleCircle}
-            circleColorOff='#ffffff'
-            circleColorOn='#ffffff'
-            backgroundColorOn='blue'
-            backgroundColorOff='#e9e9e9'
-          />
-        </View>
-
-        <View style={styles.controlsContainer}>
-          {showMbtiles && (
-            <View style={styles.sliderContainer}>
-              <Text style={styles.sliderLabel}>Độ trong suốt MBTiles:</Text>
-              <Slider
-                style={styles.slider}
-                minimumValue={0}
-                maximumValue={1}
-                step={0.1}
-                value={mbtilesOpacity}
-                onValueChange={setMbtilesOpacity}
-              />
-            </View>
-          )}
-        </View>
-
+        <Text style={styles.title}>Bản đồ quận Ba Đình</Text>
         <MapView
           style={styles.map}
           initialRegion={{
@@ -73,32 +74,25 @@ const Map = ({ navigation }) => {
           minZoomLevel={13}
           maxZoomLevel={17}
           initialZoomLevel={15}
+          onPress={handleMapPress}
         >
-            urlTemplate="http://192.168.100.176:3000/{z}/{x}/{y}.png"
-          {showMbtiles && (
-            <UrlTile
-              zIndex={1}
-              opacity={mbtilesOpacity}
-              tileSize={256}
-              maximumZ={17}
-              minimumZ={13}
+          {/* Lớp bản đồ từ file MBTiles */}
+          {/* ... existing UrlTile components ... */}
+
+          {marker && ( // Render user-set marker
+            <Marker
+              coordinate={marker}
+              onPress={handleMarkerPress}
             />
           )}
-          
-          {/* Lớp bản đồ OpenStreetMap */}
-          <UrlTile
-            urlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-            zIndex={2}
-            opacity={0.7}
-          />
 
-          <Marker
-            coordinate={{
-              latitude: 21.037457,
-              longitude: 105.829991,
-            }}
-            title="Quận Ba Đình"
-          />
+          {userLocation && ( // Render user location marker
+            <Marker
+              coordinate={userLocation}
+              title="Your Location" // Display user location title
+              pinColor="blue" // Change color for user location marker
+            />
+          )}
         </MapView>
 
         
