@@ -7,9 +7,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   title: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginRight: 10,  // Thêm khoảng cách bên phải của title
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',  // Thay đổi từ 'space-between' sang 'flex-start'
+    alignItems: 'center',
+    marginBottom: 10,
   },
   buttonContainer: {
     marginTop: 20,
@@ -27,6 +33,32 @@ const styles = StyleSheet.create({
   map: {
     width: '100%',
     height: '100%',
+  },
+  sliderContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+  },
+  sliderLabel: {
+    marginRight: 10,
+  },
+  slider: {
+    flex: 1,
+  },
+  toggleContainer: {
+    marginLeft: 'auto',
+  },
+  toggleSwitch: {
+    width: 50,
+    height: 30,
+    borderRadius: 25,
+    padding: 5,
+  },
+  toggleCircle: {
+    width: 25,
+    height: 25,
+    borderRadius: 12.5,
+    backgroundColor: '#ffffff',
   },
 });
 

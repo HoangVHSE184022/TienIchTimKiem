@@ -5,7 +5,7 @@ const path = require('path');
 const app = express();
 const port = 3000;
 
-const mbtilesPath = path.join('E:', 'a.mbtiles');
+const mbtilesPath = path.join('D:', 'a.mbtiles');
 
 new MBTiles(mbtilesPath, (err, mbtiles) => {
   if (err) {
