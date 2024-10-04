@@ -91,17 +91,11 @@ const Map = ({ navigation }) => {
   return (
     <ScreenLayout>  
       <View style={styles.container}>
-        <Text style={styles.title}>Bản đồ quận Ba Đình</Text>
         
-        {/* New button to get user location */}
-        <TouchableOpacity
-          style={styles.locationButton}
-          onPress={getUserLocation}
-        >
-          <Text style={styles.buttonText}>Get My Location</Text>
-        </TouchableOpacity>
+        
 
         <View style={styles.headerContainer}>
+          <Text style={styles.title}>Bản đồ quận Ba Đình</Text>
           <SwitchToggle
             switchOn={showMbtiles}
             onPress={() => setShowMbtiles(!showMbtiles)}
@@ -130,6 +124,14 @@ const Map = ({ navigation }) => {
             </View>
           )}
         </View>
+
+          {/* New button to get user location */}
+        <TouchableOpacity
+          style={styles.locationButton}
+          onPress={getUserLocation}
+        >
+          <Text style={styles.buttonText}>Lấy vị trí của tôi</Text>
+        </TouchableOpacity>
 
         <MapView
           ref={mapRef}
