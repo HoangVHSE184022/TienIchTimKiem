@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import MapView, { Marker, UrlTile } from 'react-native-maps';
 import Slider from '@react-native-community/slider';
@@ -7,7 +7,7 @@ import Geolocation from 'react-native-geolocation-service'; // Import Geolocatio
 import axios from 'axios';
 import styles from './MapStyles';
 import ScreenLayout from '../ScreenLayout/ScreenLayout';
-import { PermissionsAndroid } from 'react-native'; // Import PermissionsAndroid
+import { PermissionsAndroid, Platform } from 'react-native'; // Add Platform
 
 const Map = ({ navigation }) => {
   const [mapData, setMapData] = useState(null);
@@ -16,26 +16,15 @@ const Map = ({ navigation }) => {
   const [marker, setMarker] = useState(null); // State for marker
   const [showMarker, setShowMarker] = useState(true); // State to toggle marker visibility
   const [userLocation, setUserLocation] = useState(null); // State for user location
+  const mapRef = useRef(null);
 
-  useEffect(() => {
-    fetchMapData();
-    getUserLocation(); // Fetch user location on mount
-  }, []);
-
-  const fetchMapData = async () => {
-    // ... existing code to fetch map data ...
-  };
+  // Remove the useEffect hook that was calling getUserLocation
 
   const getUserLocation = async () => {
     try {
-      // Check if permission is already granted
-      const hasPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
+      let hasPermission = false;
       
-      if (hasPermission) {
-        // Permission is already granted, get the location
-        getCurrentPosition();
-      } else {
-        // Request permission
+      if (Platform.OS === 'android') {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
           {
@@ -46,33 +35,38 @@ const Map = ({ navigation }) => {
             buttonPositive: "OK"
           }
         );
+        hasPermission = granted === PermissionsAndroid.RESULTS.GRANTED;
+      } else {
+        const result = await Geolocation.requestAuthorization('whenInUse');
+        hasPermission = result === 'granted';
+      }
 
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          // Permission granted, get the location
-          getCurrentPosition();
-        } else {
-          console.log("Location permission denied");
-        }
+      if (hasPermission) {
+        Geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            setUserLocation({ latitude, longitude });
+            setMarker({
+              coordinate: { latitude, longitude },
+              title: "My Location"
+            });
+            mapRef.current.animateToRegion({
+              latitude,
+              longitude,
+              latitudeDelta: 0.005,
+              longitudeDelta: 0.005,
+            }, 1000);
+          },
+          (error) => {
+            console.error('Error getting location:', error);
+          },
+          { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+        );
+      } else {
+        console.log("Location permission denied");
       }
     } catch (err) {
       console.warn(err);
-    }
-  };
-
-  const getCurrentPosition = () => {
-    if (Geolocation) { // Check if Geolocation is available
-      Geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setUserLocation({ latitude, longitude }); // Set user location
-        },
-        (error) => {
-          console.error('Error getting location:', error);
-        },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-      );
-    } else {
-      console.error('Geolocation is not available');
     }
   };
 
@@ -92,10 +86,33 @@ const Map = ({ navigation }) => {
     setShowMarker(!showMarker);
   };
 
+  const goToUserLocation = () => {
+    if (userLocation && mapRef.current) {
+      mapRef.current.animateToRegion({
+        latitude: userLocation.latitude,
+        longitude: userLocation.longitude,
+        latitudeDelta: 0.005,
+        longitudeDelta: 0.005,
+      }, 1000);
+    } else {
+      console.log("User location not available");
+      // Optionally, you could call getUserLocation() here to request the location again
+    }
+  };
+
   return (
     <ScreenLayout>  
       <View style={styles.container}>
         <Text style={styles.title}>Bản đồ quận Ba Đình</Text>
+        
+        {/* New button to get user location */}
+        <TouchableOpacity
+          style={styles.locationButton}
+          onPress={getUserLocation}
+        >
+          <Text style={styles.buttonText}>Get My Location</Text>
+        </TouchableOpacity>
+
         <View style={styles.headerContainer}>
           <SwitchToggle
             switchOn={showMbtiles}
@@ -127,6 +144,7 @@ const Map = ({ navigation }) => {
         </View>
 
         <MapView
+          ref={mapRef}
           style={styles.map}
           initialRegion={{
             latitude: 21.037457,
@@ -167,7 +185,7 @@ const Map = ({ navigation }) => {
           {userLocation && ( // Render user's current location
             <Marker
               coordinate={userLocation}
-              title="Your Location"
+              title="My Location"
               pinColor="blue" // Change color for user location marker
             />
           )}
@@ -188,6 +206,15 @@ const Map = ({ navigation }) => {
         >
           <View style={styles.button}>
             <Text style={styles.buttonText}>About Us</Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.buttonContainer, styles.locationButton]}
+          onPress={goToUserLocation}
+        >
+          <View style={styles.button}>
+            <Text style={styles.buttonText}>Go to My Location</Text>
           </View>
         </TouchableOpacity>
       </View>
