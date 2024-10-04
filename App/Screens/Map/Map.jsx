@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput } from 'react-native';
 import MapView, { Marker, UrlTile } from 'react-native-maps';
 import Slider from '@react-native-community/slider';
 import SwitchToggle from 'react-native-switch-toggle';
@@ -16,6 +16,8 @@ const Map = ({ navigation }) => {
   const [marker, setMarker] = useState(null); // State for marker
   const [showMarker, setShowMarker] = useState(true); // State to toggle marker visibility
   const [userLocation, setUserLocation] = useState(null); // State for user location
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {
     fetchMapData();
@@ -92,10 +94,53 @@ const Map = ({ navigation }) => {
     setShowMarker(!showMarker);
   };
 
+  const handleSearch = async () => {
+    if (searchQuery.trim() === '') return;
+    try {
+      const response = await axios.get(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}`
+      );
+      setSearchResults(response.data);
+      if (response.data.length > 0) {
+        const { lat, lon } = response.data[0];
+        setMarker({
+          coordinate: { latitude: parseFloat(lat), longitude: parseFloat(lon) },
+          title: response.data[0].display_name,
+        });
+        // Move map to the search result
+        mapRef.current.animateToRegion({
+          latitude: parseFloat(lat),
+          longitude: parseFloat(lon),
+          latitudeDelta: 0.05,
+          longitudeDelta: 0.05,
+        });
+      }
+    } catch (error) {
+      console.error('Error searching:', error);
+    }
+  };
+
+  const mapRef = React.useRef(null);
+
   return (
     <ScreenLayout>  
       <View style={styles.container}>
         <Text style={styles.title}>Bản đồ quận Ba Đình</Text>
+        
+        {/* Add search bar */}
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search for a location"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            onSubmitEditing={handleSearch}
+          />
+          <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
+            <Text style={styles.searchButtonText}>Search</Text>
+          </TouchableOpacity>
+        </View>
+
         <View style={styles.headerContainer}>
           <SwitchToggle
             switchOn={showMbtiles}
@@ -127,6 +172,7 @@ const Map = ({ navigation }) => {
         </View>
 
         <MapView
+          ref={mapRef}
           style={styles.map}
           initialRegion={{
             latitude: 21.037457,
@@ -141,7 +187,7 @@ const Map = ({ navigation }) => {
 
           {showMbtiles && (
             <UrlTile
-              urlTemplate="http://192.168.1.14:3000/{z}/{x}/{y}.png"
+              urlTemplate="http://192.168.100.176:3000/{z}/{x}/{y}.png"
               zIndex={1}
               opacity={mbtilesOpacity}
               tileSize={256}
@@ -170,6 +216,15 @@ const Map = ({ navigation }) => {
               title="Your Location"
               pinColor="blue" // Change color for user location marker
             />
+          )}
+          {searchResults && ( // Render search results
+            searchResults.map((result, index) => (
+              <Marker
+                key={index}
+                coordinate={{ latitude: parseFloat(result.lat), longitude: parseFloat(result.lon) }}
+                title={result.display_name}
+              />
+            ))
           )}
         </MapView>
 
