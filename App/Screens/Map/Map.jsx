@@ -68,6 +68,7 @@ const Map = ({ navigation }) => {
             circleColorOn='#ffffff'
             backgroundColorOn='blue'
             backgroundColorOff='#e9e9e9'
+            // Remove any defaultProps that might be causing the warning
           />
         </View>
 
@@ -100,17 +101,10 @@ const Map = ({ navigation }) => {
           initialZoomLevel={15}
           onPress={handleMapPress} // Handle map press to set marker
         >
-          {/* Lớp bản đồ từ file MBTiles */}
-          <UrlTile
-            urlTemplate="http://192.168.100.176:3000/{z}/{x}/{y}.png"
-            zIndex={1}
-            opacity={1}
-            tileSize={256}
-            maximumZ={17}
-            minimumZ={13}
-          />
+
           {showMbtiles && (
             <UrlTile
+              urlTemplate="http://192.168.1.14:3000/{z}/{x}/{y}.png"
               zIndex={1}
               opacity={mbtilesOpacity}
               tileSize={256}
