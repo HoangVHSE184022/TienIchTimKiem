@@ -8,6 +8,7 @@ import axios from 'axios';
 import styles from './MapStyles';
 import ScreenLayout from '../ScreenLayout/ScreenLayout';
 import { PermissionsAndroid, Platform } from 'react-native'; // Add Platform
+import * as Location from 'expo-location';
 
 const Map = ({ navigation }) => {
   const [mapData, setMapData] = useState(null);
@@ -18,71 +19,59 @@ const Map = ({ navigation }) => {
   const [userLocation, setUserLocation] = useState(null); // State for user location
   const mapRef = useRef(null);
 
-  // Remove the useEffect hook that was calling getUserLocation
 
   const getUserLocation = async () => {
     try {
       let hasPermission = false;
       
-      if (Platform.OS === 'android') {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-          {
-            title: "Location Permission",
-            message: "This app needs access to your location.",
-            buttonNeutral: "Ask Me Later",
-            buttonNegative: "Cancel",
-            buttonPositive: "OK"
-          }
-        );
-        hasPermission = granted === PermissionsAndroid.RESULTS.GRANTED;
-      } else {
-        const result = await Geolocation.requestAuthorization('whenInUse');
-        hasPermission = result === 'granted';
+      if (Platform.OS === 'android' || Platform.OS === 'ios') {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        hasPermission = status === 'granted';
       }
-
+  
       if (hasPermission) {
-        Geolocation.getCurrentPosition(
-          (position) => {
-            const { latitude, longitude } = position.coords;
-            setUserLocation({ latitude, longitude });
-            setMarker({
-              coordinate: { latitude, longitude },
-              title: "My Location"
-            });
-            mapRef.current.animateToRegion({
-              latitude,
-              longitude,
-              latitudeDelta: 0.005,
-              longitudeDelta: 0.005,
-            }, 1000);
-          },
-          (error) => {
-            console.error('Error getting location:', error);
-          },
-          { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-        );
+        const position = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.High, 
+          timeout: 12000,                   
+          maximumAge: 10000                
+        });
+  
+        const { latitude, longitude } = position.coords;
+        setUserLocation({ latitude, longitude });
+        setMarker({
+          coordinate: { latitude, longitude },
+          title: "My Location"
+        });
+  
+        if (mapRef.current) {
+          mapRef.current.animateToRegion({
+            latitude,
+            longitude,
+            latitudeDelta: 0.005,
+            longitudeDelta: 0.005,
+          }, 1000);
+        }
       } else {
         console.log("Location permission denied");
       }
     } catch (err) {
-      console.warn(err);
+      console.warn("Error getting location: ", err);
     }
   };
 
   const handleMapPress = (event) => { 
     const { coordinate } = event.nativeEvent;
     if (marker && marker.latitude === coordinate.latitude && marker.longitude === coordinate.longitude) {
-      setMarker(null); // Remove marker if tapped again
+      setMarker(null); 
     } else {
       setMarker({
-        coordinate, // Set the coordinate
-        title: `Lat: ${coordinate.latitude.toFixed(6)}, Lon: ${coordinate.longitude.toFixed(6)}` // Set title with lat and lon
+        coordinate, 
+        title: `Lat: ${coordinate.latitude.toFixed(6)}, Lon: ${coordinate.longitude.toFixed(6)}` 
       });
     }
   };
 
-  const toggleMarkerVisibility = () => { // Function to toggle marker visibility
+  const toggleMarkerVisibility = () => { 
     setShowMarker(!showMarker);
   };
 
@@ -96,7 +85,6 @@ const Map = ({ navigation }) => {
       }, 1000);
     } else {
       console.log("User location not available");
-      // Optionally, you could call getUserLocation() here to request the location again
     }
   };
 
