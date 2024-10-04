@@ -7,6 +7,7 @@ import Geolocation from 'react-native-geolocation-service'; // Import Geolocatio
 import axios from 'axios';
 import styles from './MapStyles';
 import ScreenLayout from '../ScreenLayout/ScreenLayout';
+import { PermissionsAndroid } from 'react-native'; // Import PermissionsAndroid
 
 const Map = ({ navigation }) => {
   const [mapData, setMapData] = useState(null);
@@ -25,17 +26,54 @@ const Map = ({ navigation }) => {
     // ... existing code to fetch map data ...
   };
 
-  const getUserLocation = () => { // Function to get user location
-    Geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        setUserLocation({ latitude, longitude }); // Set user location
-      },
-      (error) => {
-        console.error('Error getting location:', error);
-      },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-    );
+  const getUserLocation = async () => {
+    try {
+      // Check if permission is already granted
+      const hasPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
+      
+      if (hasPermission) {
+        // Permission is already granted, get the location
+        getCurrentPosition();
+      } else {
+        // Request permission
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: "Location Permission",
+            message: "This app needs access to your location.",
+            buttonNeutral: "Ask Me Later",
+            buttonNegative: "Cancel",
+            buttonPositive: "OK"
+          }
+        );
+
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          // Permission granted, get the location
+          getCurrentPosition();
+        } else {
+          console.log("Location permission denied");
+        }
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+
+  const getCurrentPosition = () => {
+    if (Geolocation) { // Check if Geolocation is available
+      Geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserLocation({ latitude, longitude }); // Set user location
+        },
+        (error) => {
+          console.error('Error getting location:', error);
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+      );
+    } else {
+      console.error('Geolocation is not available');
+    }
   };
 
   const handleMapPress = (event) => { 
@@ -96,9 +134,8 @@ const Map = ({ navigation }) => {
             latitudeDelta: 0.05,
             longitudeDelta: 0.05,
           }}
-          minZoomLevel={13}
-          maxZoomLevel={17}
-          initialZoomLevel={15}
+          minZoomLevel={0}
+          maxZoomLevel={20} // Updated property
           onPress={handleMapPress} // Handle map press to set marker
         >
 
