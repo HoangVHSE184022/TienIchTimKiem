@@ -60,6 +60,27 @@ const styles = StyleSheet.create({
     borderRadius: 12.5,
     backgroundColor: '#ffffff',
   },
+  searchContainer: {
+    flexDirection: 'row',
+    marginHorizontal: 10,
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  searchInput: {
+    flex: 1,
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginRight: 10,
+  },
+  searchButton: {
+    backgroundColor: 'blue',
+    padding: 10,
+    borderRadius: 5,
+    justifyContent: 'center',
+  },
 });
 
 export default styles;
