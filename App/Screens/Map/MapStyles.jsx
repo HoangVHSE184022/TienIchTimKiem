@@ -93,12 +93,17 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   circleMarker: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: 'blue',
-    borderWidth: 2,
-    borderColor: 'white',
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: '#4285F4',
+    borderWidth: 3,
+    borderColor: '#ffffff',
+    shadowColor: '#000', 
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 5,
   },
 });
 
