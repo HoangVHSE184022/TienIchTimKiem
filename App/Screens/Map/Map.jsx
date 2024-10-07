@@ -9,6 +9,7 @@ import styles from './MapStyles';
 import ScreenLayout from '../ScreenLayout/ScreenLayout';
 import { PermissionsAndroid, Platform } from 'react-native'; // Add Platform
 import * as Location from 'expo-location';
+import { TextInput } from 'react-native';
 
 const Map = ({ navigation }) => {
   const [mapData, setMapData] = useState(null);
@@ -17,8 +18,8 @@ const Map = ({ navigation }) => {
   const [marker, setMarker] = useState(null); // State for marker
   const [showMarker, setShowMarker] = useState(true); // State to toggle marker visibility
   const [userLocation, setUserLocation] = useState(null); // State for user location
+  const [searchQuery, setSearchQuery] = useState('');
   const mapRef = useRef(null);
-
 
   const getUserLocation = async () => {
     try {
@@ -88,11 +89,57 @@ const Map = ({ navigation }) => {
     }
   };
 
+  const handleSearch = async () => {
+    if (searchQuery.trim() === '') return;
+
+    try {
+      const response = await axios.get(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}`
+      );
+
+      if (response.data && response.data.length > 0) {
+        const { lat, lon } = response.data[0];
+        const searchLocation = {
+          latitude: parseFloat(lat),
+          longitude: parseFloat(lon),
+        };
+
+        setMarker({
+          coordinate: searchLocation,
+          title: searchQuery,
+        });
+
+        mapRef.current?.animateToRegion({
+          ...searchLocation,
+          latitudeDelta: 0.05,
+          longitudeDelta: 0.05,
+        }, 1000);
+      } else {
+        console.log('Location not found');
+        // You might want to show an alert to the user here
+      }
+    } catch (error) {
+      console.error('Error searching for location:', error);
+      // You might want to show an error message to the user here
+    }
+  };
+
   return (
     <ScreenLayout>  
       <View style={styles.container}>
-        
-        
+        {/* Add the search bar near the top of the component */}
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search for a location"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            onSubmitEditing={handleSearch}
+          />
+          <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
+            <Text style={styles.buttonText}>Search</Text>
+          </TouchableOpacity>
+        </View>
 
         <View style={styles.headerContainer}>
           <Text style={styles.title}>Bản đồ quận Ba Đình</Text>
@@ -207,6 +254,8 @@ const Map = ({ navigation }) => {
             <Text style={styles.buttonText}>Go to My Location</Text>
           </View>
         </TouchableOpacity>
+
+        {/* ... rest of your existing JSX ... */}
       </View>
     </ScreenLayout>
   );
