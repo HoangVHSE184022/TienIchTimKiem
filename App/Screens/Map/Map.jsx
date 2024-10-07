@@ -154,6 +154,9 @@ const Map = ({ navigation }) => {
             backgroundColorOff='#e9e9e9'
             // Remove any defaultProps that might be causing the warning
           />
+          <TouchableOpacity style={styles.danDuongButton}>
+            <Text style={styles.danDuongButtonText}>Dẫn đường</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.controlsContainer}>

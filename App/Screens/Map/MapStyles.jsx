@@ -81,6 +81,17 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     justifyContent: 'center',
   },
+  danDuongButton: {
+    backgroundColor: 'blue',
+    padding: 10,
+    borderRadius: 5,
+    marginLeft: 10, // Add some space between the toggle and the button
+  },
+  danDuongButtonText: {
+    color: 'white',
+    textAlign: 'center',
+    fontSize: 18,
+  },
 });
 
 export default styles;
