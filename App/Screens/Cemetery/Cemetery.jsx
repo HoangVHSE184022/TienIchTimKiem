@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Button } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import styles from './CemeteryStyles';
 
@@ -40,6 +40,12 @@ export default function Cemetery() {
         <Text style={styles.infoText}>
           {scanned ? qrData : 'Scan a QR code to see the information here'}
         </Text>
+        {scanned && (
+          <Button
+            title="Scan Again"
+            onPress={() => setScanned(false)}
+          />
+        )}
       </View>
     </View>
   );
