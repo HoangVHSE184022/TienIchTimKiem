@@ -92,6 +92,19 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 18,
   },
+  distanceContainer: {
+    position: 'absolute',
+    top: 100,
+    left: 10,
+    right: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    padding: 10,
+    borderRadius: 5,
+  },
+  distanceText: {
+    fontSize: 16,
+    textAlign: 'center',
+  },
 });
 
 export default styles;

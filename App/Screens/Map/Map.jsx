@@ -11,14 +11,15 @@ import { PermissionsAndroid, Platform } from 'react-native'; // Add Platform
 import * as Location from 'expo-location';
 import { TextInput } from 'react-native';
 import polyline from '@mapbox/polyline'; // Add polyline import
+import { getDistance } from 'geolib'; // Add this import
 
 const Map = ({ navigation }) => {
   const [route, setRoute] = useState(null); // Add this line
   const [mapData, setMapData] = useState(null);
   const [mbtilesOpacity, setMbtilesOpacity] = useState(1);
   const [showMbtiles, setShowMbtiles] = useState(true);
-  const [marker, setMarker] = useState(null); // State for marker
-  const [showMarker, setShowMarker] = useState(true); // State to toggle marker visibility
+  const [markers, setMarkers] = useState([]); // Replace [marker, setMarker] with this
+  const [distance, setDistance] = useState(null); // Add this state
   const [userLocation, setUserLocation] = useState(null); // State for user location
   const [searchQuery, setSearchQuery] = useState('');
   const mapRef = useRef(null);
@@ -41,10 +42,10 @@ const Map = ({ navigation }) => {
   
         const { latitude, longitude } = position.coords;
         setUserLocation({ latitude, longitude });
-        setMarker({
+        setMarkers([{
           coordinate: { latitude, longitude },
           title: "My Location"
-        });
+        }]);
   
         if (mapRef.current) {
           mapRef.current.animateToRegion({
@@ -64,18 +65,37 @@ const Map = ({ navigation }) => {
 
   const handleMapPress = (event) => { 
     const { coordinate } = event.nativeEvent;
-    if (marker && marker.latitude === coordinate.latitude && marker.longitude === coordinate.longitude) {
-      setMarker(null); 
+    if (markers.length < 2) {
+      setMarkers([...markers, {
+        coordinate,
+        title: `Marker ${markers.length + 1}`
+      }]);
     } else {
-      setMarker({
-        coordinate, 
-        title: `Lat: ${coordinate.latitude.toFixed(6)}, Lon: ${coordinate.longitude.toFixed(6)}` 
-      });
+      // Reset markers if we already have two
+      setMarkers([{
+        coordinate,
+        title: 'Marker 1'
+      }]);
+    }
+
+    // Calculate distance if we have two markers
+    if (markers.length === 1) {
+      const dist = getDistance(
+        { latitude: markers[0].coordinate.latitude, longitude: markers[0].coordinate.longitude },
+        { latitude: coordinate.latitude, longitude: coordinate.longitude }
+      );
+      setDistance(dist);
+    } else {
+      setDistance(null);
     }
   };
 
   const toggleMarkerVisibility = () => { 
     setShowMarker(!showMarker);
+    if (!showMarker) {
+      setMarkers([]);
+      setDistance(null);
+    }
   };
 
   const goToUserLocation = () => {
@@ -106,10 +126,10 @@ const Map = ({ navigation }) => {
           longitude: parseFloat(lon),
         };
 
-        setMarker({
+        setMarkers([{
           coordinate: searchLocation,
           title: searchQuery,
-        });
+        }]);
 
         mapRef.current?.animateToRegion({
           ...searchLocation,
@@ -127,14 +147,14 @@ const Map = ({ navigation }) => {
   };
 
   const handleNavigation = async () => {
-    if (!userLocation || !marker) {
+    if (!userLocation || !markers.length) {
       alert('Please set both your location and a destination marker.');
       return;
     }
 
     try {
       const response = await axios.get(
-        `http://router.project-osrm.org/route/v1/driving/${userLocation.longitude},${userLocation.latitude};${marker.coordinate.longitude},${marker.coordinate.latitude}?overview=full&geometries=polyline`
+        `http://router.project-osrm.org/route/v1/driving/${userLocation.longitude},${userLocation.latitude};${markers[0].coordinate.longitude},${markers[0].coordinate.latitude}?overview=full&geometries=polyline`
       );
 
       if (response.data && response.data.routes && response.data.routes.length > 0) {
@@ -255,12 +275,14 @@ const Map = ({ navigation }) => {
             zIndex={0}
           />
 
-          {showMarker && marker && ( // Render user-set marker based on visibility
+          {showMarker && markers.map((marker, index) => (
             <Marker
+              key={index}
               coordinate={marker.coordinate}
-              title={marker.title} // Display lat and lon as title
+              title={marker.title}
             />
-          )}
+          ))}
+
           {userLocation && ( // Render user's current location
             <Marker
               coordinate={userLocation}
@@ -305,6 +327,12 @@ const Map = ({ navigation }) => {
             <Text style={styles.buttonText}>Go to My Location</Text>
           </View>
         </TouchableOpacity>
+
+        {distance !== null && (
+          <View style={styles.distanceContainer}>
+            <Text style={styles.distanceText}>Distance: {distance} meters</Text>
+          </View>
+        )}
 
         {/* ... rest of your existing JSX ... */}
       </View>
