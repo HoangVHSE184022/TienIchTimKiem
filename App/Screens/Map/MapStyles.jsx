@@ -92,6 +92,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 18,
   },
+  circleMarker: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: 'blue',
+    borderWidth: 2,
+    borderColor: 'white',
+  },
 });
 
 export default styles;

@@ -266,14 +266,15 @@ const Map = ({ navigation }) => {
               coordinate={userLocation}
               title="My Location"
               pinColor="blue" // Change color for user location marker
-            />
+            >
+              <View style={styles.circleMarker} />
+            </Marker>
           )}
           
           {route && (
             <Polyline
               coordinates={route}
-              strokeColor="#4169E1"
-              //strokeColor="#0000FF"
+              strokeColor="#0000FF" // Deep blue color
               strokeWidth={6}
             />
           )}
