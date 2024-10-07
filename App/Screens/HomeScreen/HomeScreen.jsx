@@ -22,7 +22,7 @@ const HomeScreen = ({ navigation }) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.card}
-            onPress={() => navigation.navigate('Error', { message: 'Trang này chưa được phát triển' })}  // Thay thế bằng tên màn hình
+            onPress={() => navigation.navigate('Nghĩa trang liệt sĩ')}
           >
             <Image
             source={require('../../assets/iconNghiaTrang.png')}

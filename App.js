@@ -15,6 +15,7 @@ import ChangeEmail from './App/Screens/ChangeEmail/ChangeEmail';
 import ChangePassword from './App/Screens/ChangePassword/ChangePassword';
 import Map from './App/Screens/Map/Map';
 import ErrorScreen from './App/Screens/Error/Error';
+import Cemetery from './App/Screens/Cemetery/Cemetery';
 import 'react-native-gesture-handler';
 
 const Drawer = createDrawerNavigator();
@@ -83,11 +84,7 @@ export default function App() {
         <Drawer.Screen name="Bản đồ quy hoạch" component={Map} />
 
         {/* Trang Nghĩa trang liệt sĩ */}  
-        <Drawer.Screen 
-          name="Nghĩa trang liệt sĩ" 
-          component={createUnderDevelopmentScreen('Trang Nghĩa trang liệt sĩ đang được phát triển')} 
-          options={{ title: 'Nghĩa trang liệt sĩ' }} 
-        />
+        <Drawer.Screen name="Nghĩa trang liệt sĩ" component={Cemetery} />
 
         {/* Trang Bản đồ cá nhân */}
         <Drawer.Screen 
