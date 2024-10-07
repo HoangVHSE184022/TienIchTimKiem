@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import MapView, { Marker, UrlTile } from 'react-native-maps';
+import MapView, { Marker, UrlTile, Polyline } from 'react-native-maps';
 import Slider from '@react-native-community/slider';
 import SwitchToggle from 'react-native-switch-toggle';
 import Geolocation from 'react-native-geolocation-service'; // Import Geolocation
@@ -10,8 +10,10 @@ import ScreenLayout from '../ScreenLayout/ScreenLayout';
 import { PermissionsAndroid, Platform } from 'react-native'; // Add Platform
 import * as Location from 'expo-location';
 import { TextInput } from 'react-native';
+import polyline from '@mapbox/polyline'; // Add polyline import
 
 const Map = ({ navigation }) => {
+  const [route, setRoute] = useState(null); // Add this line
   const [mapData, setMapData] = useState(null);
   const [mbtilesOpacity, setMbtilesOpacity] = useState(1);
   const [showMbtiles, setShowMbtiles] = useState(true);
@@ -124,6 +126,44 @@ const Map = ({ navigation }) => {
     }
   };
 
+  const handleNavigation = async () => {
+    if (!userLocation || !marker) {
+      alert('Please set both your location and a destination marker.');
+      return;
+    }
+
+    try {
+      const response = await axios.get(
+        `http://router.project-osrm.org/route/v1/driving/${userLocation.longitude},${userLocation.latitude};${marker.coordinate.longitude},${marker.coordinate.latitude}?overview=full&geometries=polyline`
+      );
+
+      if (response.data && response.data.routes && response.data.routes.length > 0) {
+        const routeGeometry = response.data.routes[0].geometry;
+        const decodedRoute = polyline.decode(routeGeometry);
+
+        setRoute(decodedRoute.map(point => ({
+          latitude: point[0],
+          longitude: point[1]
+        })));
+
+        // Fit the map to show the entire route
+        mapRef.current?.fitToCoordinates(decodedRoute.map(point => ({
+          latitude: point[0],
+          longitude: point[1]
+        })), {
+          edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
+          animated: true,
+        });
+      } else {
+        alert('No route found.');
+      }
+    } catch (error) {
+      console.error('Error fetching route:', error);
+      alert('Error fetching route. Please try again.');
+    }
+  };
+
+
   return (
     <ScreenLayout>  
       <View style={styles.container}>
@@ -152,9 +192,8 @@ const Map = ({ navigation }) => {
             circleColorOn='#ffffff'
             backgroundColorOn='blue'
             backgroundColorOff='#e9e9e9'
-            // Remove any defaultProps that might be causing the warning
           />
-          <TouchableOpacity style={styles.danDuongButton}>
+          <TouchableOpacity style={styles.danDuongButton} onPress={handleNavigation}>
             <Text style={styles.danDuongButtonText}>Dẫn đường</Text>
           </TouchableOpacity>
         </View>
@@ -227,6 +266,15 @@ const Map = ({ navigation }) => {
               coordinate={userLocation}
               title="My Location"
               pinColor="blue" // Change color for user location marker
+            />
+          )}
+          
+          {route && (
+            <Polyline
+              coordinates={route}
+              strokeColor="#4169E1"
+              //strokeColor="#0000FF"
+              strokeWidth={6}
             />
           )}
         </MapView>
