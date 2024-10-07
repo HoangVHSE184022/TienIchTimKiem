@@ -22,6 +22,7 @@ const Map = ({ navigation }) => {
   const [distance, setDistance] = useState(null); // Add this state
   const [userLocation, setUserLocation] = useState(null); // State for user location
   const [searchQuery, setSearchQuery] = useState('');
+  const [showMarker, setShowMarker] = useState(true); // Add this line
   const mapRef = useRef(null);
 
   const getUserLocation = async () => {
@@ -64,6 +65,8 @@ const Map = ({ navigation }) => {
   };
 
   const handleMapPress = (event) => { 
+    if (!showMarker) return; // Don't add markers if showMarker is false
+    
     const { coordinate } = event.nativeEvent;
     if (markers.length < 2) {
       setMarkers([...markers, {
@@ -92,7 +95,7 @@ const Map = ({ navigation }) => {
 
   const toggleMarkerVisibility = () => { 
     setShowMarker(!showMarker);
-    if (!showMarker) {
+    if (showMarker) { // This was inverted, so we fixed it
       setMarkers([]);
       setDistance(null);
     }
@@ -303,10 +306,10 @@ const Map = ({ navigation }) => {
 
         <TouchableOpacity
           style={styles.buttonContainer}
-          onPress={toggleMarkerVisibility} // Toggle marker visibility
+          onPress={toggleMarkerVisibility}
         >
           <View style={styles.button}>
-            <Text style={styles.buttonText}>{showMarker ? 'Hide Marker' : 'Show Marker'}</Text>
+            <Text style={styles.buttonText}>{showMarker ? 'Hide Markers' : 'Show Markers'}</Text>
           </View>
         </TouchableOpacity>
 
