@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
@@ -16,6 +16,7 @@ import ChangePassword from './App/Screens/ChangePassword/ChangePassword';
 import Map from './App/Screens/Map/Map';
 import ErrorScreen from './App/Screens/Error/Error';
 import Cemetery from './App/Screens/Cemetery/Cemetery';
+import { createTable, insertSampleData, queryData } from './App/Services/database';
 import 'react-native-gesture-handler';
 
 const Drawer = createDrawerNavigator();
@@ -65,7 +66,14 @@ const createUnderDevelopmentScreen = (message) => {
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Hàm đăng xuất
+  useEffect(() => {
+    createTable();
+    insertSampleData();
+    queryData(rows => {
+      console.log(JSON.stringify(rows));
+    });
+  }, []);
+
   const handleLogout = () => {
     setIsLoggedIn(false);
   };
