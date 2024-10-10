@@ -10,7 +10,7 @@ export const DatabaseProvider = ({ children }) => {
 
   useEffect(() => {
     const initDatabase = async () => {
-      const database = SQLite.openDatabase('LietSiDatabase.db');
+      const database = SQLite.openDatabaseAsync('LietSiDatabase.db');
       if (!database) {
         setError('Failed to open the database');
         return;
