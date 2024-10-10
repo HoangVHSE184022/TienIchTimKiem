@@ -10,48 +10,46 @@ export const DatabaseProvider = ({ children }) => {
 
   useEffect(() => {
     const initDatabase = async () => {
-      const database = SQLite.openDatabaseAsync('LietSiDatabase.db');
-      if (!database) {
-        setError('Failed to open the database');
-        return;
-      }
+      try {
+        const database = await SQLite.openDatabaseAsync('LietSiDatabase.db');
+        if (!database) {
+          setError('Failed to open the database');
+          return;
+        }
 
-      console.log('Database opened successfully');
-      await createTables(database);
-      setDb(database);
-      setIsInitialized(true);
+        await createTables(database);
+        setDb(database);
+        setIsInitialized(true);
+        console.log('Database opened successfully');
+      } catch (error) {
+        setError(error.message);
+        console.error('Error opening database:', error);
+      }
     };
 
     initDatabase();
   }, []);
 
   const createTables = async (database) => {
-    const lietSiTableQuery = `
-      CREATE TABLE IF NOT EXISTS LietSi (
-        LietSiId INTEGER PRIMARY KEY AUTOINCREMENT,
-        HoVaTen TEXT,
-        QueQuan TEXT,
-        NamSinh INTEGER,
-        NamMat INTEGER,
-        NoiYenNghi TEXT,
-        DonVi TEXT,
-        CapBac TEXT,
-        ViTriMoX REAL,
-        ViTriMoY REAL
-      )
-    `;
-
-    database.withTransactionAsync(tx => {
-      tx.executeSql(
-        lietSiTableQuery,
-        [],
-        () => console.log('LietSi table created successfully'),
-        (tx, error) => {
-          console.error('Error creating table:', error);
-          setError(error.message);
-        }
-      );
-    });
+    try {
+      await database.execAsync(`
+        CREATE TABLE IF NOT EXISTS LietSi (
+          LietSiId INTEGER PRIMARY KEY AUTOINCREMENT,
+          HoVaTen TEXT,
+          QueQuan TEXT,
+          NamSinh INTEGER,
+          NamMat INTEGER,
+          NoiYenNghi TEXT,
+          DonVi TEXT,
+          CapBac TEXT,
+          ViTriMoX REAL,
+          ViTriMoY REAL
+        )
+      `);
+    } catch (error) {
+      console.error('Error creating tables:', error);
+      setError(error.message);
+    }
   };
 
   return (
