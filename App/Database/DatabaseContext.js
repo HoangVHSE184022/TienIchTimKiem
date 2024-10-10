@@ -9,16 +9,15 @@ export const DatabaseProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const initDatabase = () => {
+    const initDatabase = async () => {
       const database = SQLite.openDatabase('LietSiDatabase.db');
-
       if (!database) {
         setError('Failed to open the database');
         return;
       }
 
       console.log('Database opened successfully');
-      createTables(database);
+      await createTables(database);
       setDb(database);
       setIsInitialized(true);
     };
@@ -29,16 +28,16 @@ export const DatabaseProvider = ({ children }) => {
   const createTables = (database) => {
     const lietSiTableQuery = `
       CREATE TABLE IF NOT EXISTS LietSi (
-        LietSiId INTEGER PRIMARY KEY,
-        HoVaTen TEXT NOT NULL,
-        QueQuan TEXT NOT NULL,
-        NamSinh INTEGER NOT NULL,
-        NamMat INTEGER NOT NULL,
-        NoiYenNghi TEXT NOT NULL,
-        DonVi TEXT NOT NULL,
-        CapBac TEXT NOT NULL,
-        ViTriMoX REAL NOT NULL,
-        ViTriMoY REAL NOT NULL
+        LietSiId INTEGER PRIMARY KEY AUTOINCREMENT,
+        HoVaTen TEXT,
+        QueQuan TEXT,
+        NamSinh INTEGER,
+        NamMat INTEGER,
+        NoiYenNghi TEXT,
+        DonVi TEXT,
+        CapBac TEXT,
+        ViTriMoX REAL,
+        ViTriMoY REAL
       )
     `;
 
