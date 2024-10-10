@@ -25,7 +25,7 @@ export const DatabaseProvider = ({ children }) => {
     initDatabase();
   }, []);
 
-  const createTables = (database) => {
+  const createTables = async (database) => {
     const lietSiTableQuery = `
       CREATE TABLE IF NOT EXISTS LietSi (
         LietSiId INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -41,7 +41,7 @@ export const DatabaseProvider = ({ children }) => {
       )
     `;
 
-    database.transaction(tx => {
+    database.withTransactionAsync(tx => {
       tx.executeSql(
         lietSiTableQuery,
         [],
@@ -66,9 +66,5 @@ export const useDatabase = () => {
   if (context === undefined) {
     throw new Error('useDatabase must be used within a DatabaseProvider');
   }
-          <Button
-            title="Create Database"
-            
-          />
   return context;
 };
