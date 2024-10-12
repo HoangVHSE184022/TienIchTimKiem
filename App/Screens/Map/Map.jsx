@@ -22,6 +22,7 @@ const Map = ({ navigation }) => {
   const [userLocation, setUserLocation] = useState(null); // State for user location
   const [searchQuery, setSearchQuery] = useState('');
   const mapRef = useRef(null);
+  const [tileError, setTileError] = useState(false);
 
   const getUserLocation = async () => {
     try {
@@ -231,19 +232,19 @@ const Map = ({ navigation }) => {
             latitudeDelta: 0.05,
             longitudeDelta: 0.05,
           }}
-          minZoomLevel={0}
-          maxZoomLevel={20} // Updated property
-          onPress={handleMapPress} // Handle map press to set marker
+          minZoomLevel={6}
+          maxZoomLevel={23}
+          onPress={handleMapPress}
         >
-
           {showMbtiles && (
             <UrlTile
               urlTemplate="http://192.168.100.176:3000/{z}/{x}/{y}.png"
               zIndex={1}
               opacity={mbtilesOpacity}
               tileSize={256}
-              maximumZ={17}
-              minimumZ={13}
+              maximumZ={23}
+              minimumZ={6}
+              onError={() => setTileError(true)}
             />
           )}
           
@@ -278,6 +279,12 @@ const Map = ({ navigation }) => {
             />
           )}
         </MapView>
+
+        {tileError && (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>Error loading custom tiles. Falling back to OpenStreetMap.</Text>
+          </View>
+        )}
 
         <TouchableOpacity
           style={styles.buttonContainer}

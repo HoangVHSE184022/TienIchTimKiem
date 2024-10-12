@@ -5,7 +5,7 @@ const path = require('path');
 const app = express();
 const port = 3000;
 
-const mbtilesPath = path.join(__dirname, 'App', 'assets', 'mbtiles', 'a.mbtiles');
+const mbtilesPath = path.join(__dirname, 'App', 'assets', 'mbtiles', 'map.mbtiles');
 
 new MBTiles(mbtilesPath, (err, mbtiles) => {
   if (err) {
