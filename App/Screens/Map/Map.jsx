@@ -306,7 +306,6 @@ const Map = ({ navigation }) => {
           </View>
         </TouchableOpacity>
 
-        {/* ... rest of your existing JSX ... */}
       </View>
     </ScreenLayout>
   );
