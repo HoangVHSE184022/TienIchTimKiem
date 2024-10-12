@@ -182,7 +182,7 @@ const Map = ({ navigation }) => {
         </View>
 
         <View style={styles.headerContainer}>
-          <Text style={styles.title}>Bản đồ quận Ba Đình</Text>
+          <Text style={styles.title}>Bản đồ</Text>
           <SwitchToggle
             switchOn={showMbtiles}
             onPress={() => setShowMbtiles(!showMbtiles)}
@@ -226,8 +226,8 @@ const Map = ({ navigation }) => {
           ref={mapRef}
           style={styles.map}
           initialRegion={{
-            latitude: 21.037457,
-            longitude: 105.829991,
+            latitude: 18.053296,
+            longitude: 106.294729,
             latitudeDelta: 0.05,
             longitudeDelta: 0.05,
           }}
@@ -238,7 +238,7 @@ const Map = ({ navigation }) => {
 
           {showMbtiles && (
             <UrlTile
-              urlTemplate="http://192.168.1.14:3000/{z}/{x}/{y}.png"
+              urlTemplate="http://192.168.100.176:3000/{z}/{x}/{y}.png"
               zIndex={1}
               opacity={mbtilesOpacity}
               tileSize={256}
@@ -306,7 +306,6 @@ const Map = ({ navigation }) => {
           </View>
         </TouchableOpacity>
 
-        {/* ... rest of your existing JSX ... */}
       </View>
     </ScreenLayout>
   );
