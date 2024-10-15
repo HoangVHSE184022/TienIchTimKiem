@@ -23,6 +23,14 @@ new MBTiles(mbtilesPath, (err, mbtiles) => {
       console.log(JSON.stringify(info, null, 2));
     }
 
+    // Add a new endpoint to get zoom levels
+    app.get('/zoom-levels', (req, res) => {
+      res.json({
+        minZoom: info.minzoom || 0,
+        maxZoom: info.maxzoom || 23
+      });
+    });
+
     app.get('/:z/:x/:y.png', (req, res) => {
       const { z, x, y } = req.params;
       console.log(`Requested tile: ${z}/${x}/${y}`);

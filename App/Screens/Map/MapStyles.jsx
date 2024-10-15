@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     flexDirection: 'row',
-    justifyContent: 'flex-start',  // Thay đổi từ 'space-between' sang 'flex-start'
+    justifyContent: 'flex-start',  
     alignItems: 'center',
     marginBottom: 10,
   },
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'blue',
     padding: 10,
     borderRadius: 5,
-    marginLeft: 10, // Add some space between the toggle and the button
+    marginLeft: 10, 
   },
   danDuongButtonText: {
     color: 'white',
