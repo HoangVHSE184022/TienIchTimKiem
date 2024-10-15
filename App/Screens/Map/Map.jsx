@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import MapView, { Marker, UrlTile, Polyline } from 'react-native-maps';
 import Slider from '@react-native-community/slider';
@@ -23,6 +23,22 @@ const Map = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const mapRef = useRef(null);
   const [tileError, setTileError] = useState(false);
+  const [zoomLevels, setZoomLevels] = useState({ minZoom: 0, maxZoom: 23 });
+  const [currentZoom, setCurrentZoom] = useState(0);
+  const [centerCoordinate, setCenterCoordinate] = useState({ latitude: 0, longitude: 0 });
+
+  useEffect(() => {
+    fetchZoomLevels();
+  }, []);
+
+  const fetchZoomLevels = async () => {
+    try {
+      const response = await axios.get('http://192.168.100.176:3000/zoom-levels');
+      setZoomLevels(response.data);
+    } catch (error) {
+      console.error('Error fetching zoom levels:', error);
+    }
+  };
 
   const getUserLocation = async () => {
     try {
@@ -164,6 +180,17 @@ const Map = ({ navigation }) => {
     }
   };
 
+  const onRegionChangeComplete = (region) => {
+    // Calculate zoom level
+    const zoom = Math.log2(360 * (region.longitudeDelta / 256)) * -1 + 1;
+    setCurrentZoom(Math.round(zoom * 100) / 100); // Round to 2 decimal places
+
+    // Update center coordinate
+    setCenterCoordinate({
+      latitude: region.latitude,
+      longitude: region.longitude
+    });
+  };
 
   return (
     <ScreenLayout>  
@@ -220,7 +247,7 @@ const Map = ({ navigation }) => {
           style={styles.locationButton}
           onPress={getUserLocation}
         >
-          <Text style={styles.buttonText}>Lấy vị trí của tôi</Text>
+          <Text style={styles.buttonText}>Lấy vị trí ca tôi</Text>
         </TouchableOpacity>
 
         <MapView
@@ -232,9 +259,10 @@ const Map = ({ navigation }) => {
             latitudeDelta: 0.05,
             longitudeDelta: 0.05,
           }}
-          minZoomLevel={6}
-          maxZoomLevel={23}
+          minZoomLevel={zoomLevels.minZoom}
+          maxZoomLevel={zoomLevels.maxZoom}
           onPress={handleMapPress}
+          onRegionChangeComplete={onRegionChangeComplete}
         >
           {showMbtiles && (
             <UrlTile
@@ -242,8 +270,8 @@ const Map = ({ navigation }) => {
               zIndex={1}
               opacity={mbtilesOpacity}
               tileSize={256}
-              maximumZ={23}
-              minimumZ={6}
+              maximumZ={zoomLevels.maxZoom}
+              minimumZ={zoomLevels.minZoom}
               onError={() => setTileError(true)}
             />
           )}
@@ -312,6 +340,23 @@ const Map = ({ navigation }) => {
             <Text style={styles.buttonText}>Go to My Location</Text>
           </View>
         </TouchableOpacity>
+
+        {/* Display zoom levels */}
+        <View style={styles.zoomInfoContainer}>
+          <Text style={styles.zoomInfoText}>
+            Min Zoom: {zoomLevels.minZoom}, Max Zoom: {zoomLevels.maxZoom}
+          </Text>
+        </View>
+
+        {/* Display current zoom and center coordinate */}
+        <View style={styles.mapInfoContainer}>
+          <Text style={styles.mapInfoText}>
+            Zoom: {currentZoom}
+          </Text>
+          <Text style={styles.mapInfoText}>
+            Center: {centerCoordinate.latitude.toFixed(6)}, {centerCoordinate.longitude.toFixed(6)}
+          </Text>
+        </View>
 
       </View>
     </ScreenLayout>
