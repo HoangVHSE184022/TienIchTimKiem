@@ -26,9 +26,11 @@ const Map = ({ navigation }) => {
   const [zoomLevels, setZoomLevels] = useState({ minZoom: 0, maxZoom: 23 });
   const [currentZoom, setCurrentZoom] = useState(0);
   const [centerCoordinate, setCenterCoordinate] = useState({ latitude: 0, longitude: 0 });
+  const [initialRegion, setInitialRegion] = useState(null);
 
   useEffect(() => {
     fetchZoomLevels();
+    fetchInitialRegion();
   }, []);
 
   const fetchZoomLevels = async () => {
@@ -37,6 +39,21 @@ const Map = ({ navigation }) => {
       setZoomLevels(response.data);
     } catch (error) {
       console.error('Error fetching zoom levels:', error);
+    }
+  };
+
+  const fetchInitialRegion = async () => {
+    try {
+      const response = await axios.get('http://192.168.100.176:3000/initial-region');
+      setInitialRegion(response.data);
+    } catch (error) {
+      console.error('Error fetching initial region:', error);
+      setInitialRegion({
+        latitude: 18.053296,
+        longitude: 106.294729,
+        latitudeDelta: 0.05,
+        longitudeDelta: 0.05,
+      });
     }
   };
 
@@ -135,11 +152,9 @@ const Map = ({ navigation }) => {
         }, 1000);
       } else {
         console.log('Location not found');
-        // You might want to show an alert to the user here
       }
     } catch (error) {
       console.error('Error searching for location:', error);
-      // You might want to show an error message to the user here
     }
   };
 
@@ -163,7 +178,6 @@ const Map = ({ navigation }) => {
           longitude: point[1]
         })));
 
-        // Fit the map to show the entire route
         mapRef.current?.fitToCoordinates(decodedRoute.map(point => ({
           latitude: point[0],
           longitude: point[1]
@@ -181,11 +195,9 @@ const Map = ({ navigation }) => {
   };
 
   const onRegionChangeComplete = (region) => {
-    // Calculate zoom level
     const zoom = Math.log2(360 * (region.longitudeDelta / 256)) * -1 + 1;
     setCurrentZoom(Math.round(zoom * 100) / 100); // Round to 2 decimal places
 
-    // Update center coordinate
     setCenterCoordinate({
       latitude: region.latitude,
       longitude: region.longitude
@@ -195,7 +207,6 @@ const Map = ({ navigation }) => {
   return (
     <ScreenLayout>  
       <View style={styles.container}>
-        {/* Add the search bar near the top of the component */}
         <View style={styles.searchContainer}>
           <TextInput
             style={styles.searchInput}
@@ -242,7 +253,6 @@ const Map = ({ navigation }) => {
           )}
         </View>
 
-          {/* New button to get user location */}
         <TouchableOpacity
           style={styles.locationButton}
           onPress={getUserLocation}
@@ -250,63 +260,60 @@ const Map = ({ navigation }) => {
           <Text style={styles.buttonText}>Lấy vị trí ca tôi</Text>
         </TouchableOpacity>
 
-        <MapView
-          ref={mapRef}
-          style={styles.map}
-          initialRegion={{
-            latitude: 18.053296,
-            longitude: 106.294729,
-            latitudeDelta: 0.05,
-            longitudeDelta: 0.05,
-          }}
-          minZoomLevel={zoomLevels.minZoom}
-          maxZoomLevel={zoomLevels.maxZoom}
-          onPress={handleMapPress}
-          onRegionChangeComplete={onRegionChangeComplete}
-        >
-          {showMbtiles && (
+        {initialRegion && (
+          <MapView
+            ref={mapRef}
+            style={styles.map}
+            initialRegion={initialRegion}
+            minZoomLevel={zoomLevels.minZoom}
+            maxZoomLevel={zoomLevels.maxZoom}
+            onPress={handleMapPress}
+            onRegionChangeComplete={onRegionChangeComplete}
+          >
+            {showMbtiles && (
+              <UrlTile
+                urlTemplate="http://192.168.100.176:3000/{z}/{x}/{y}.png"
+                zIndex={1}
+                opacity={mbtilesOpacity}
+                tileSize={256}
+                maximumZ={zoomLevels.maxZoom}
+                minimumZ={zoomLevels.minZoom}
+                onError={() => setTileError(true)}
+              />
+            )}
+            
+            {/* Lớp bản đồ OpenStreetMap */}
             <UrlTile
-              urlTemplate="http://192.168.100.176:3000/{z}/{x}/{y}.png"
-              zIndex={1}
-              opacity={mbtilesOpacity}
-              tileSize={256}
-              maximumZ={zoomLevels.maxZoom}
-              minimumZ={zoomLevels.minZoom}
-              onError={() => setTileError(true)}
+              urlTemplate="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              maximumZ={19}
+              minimumZ={1}
+              zIndex={0}
             />
-          )}
-          
-          {/* Lớp bản đồ OpenStreetMap */}
-          <UrlTile
-            urlTemplate="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            maximumZ={19}
-            minimumZ={1}
-            zIndex={0}
-          />
 
-          {showMarker && marker && ( // Render user-set marker based on visibility
-            <Marker
-              coordinate={marker.coordinate}
-              title={marker.title} // Display lat and lon as title
-            />
-          )}
-          {userLocation && ( // Render user's current location
-            <Marker
-              coordinate={userLocation}
-              title="My Location"
-              pinColor="blue" // Change color for user location marker
-            />
-          )}
-          
-          {route && (
-            <Polyline
-              coordinates={route}
-              strokeColor="#4169E1"
-              //strokeColor="#0000FF"
-              strokeWidth={6}
-            />
-          )}
-        </MapView>
+            {showMarker && marker && ( // Render user-set marker based on visibility
+              <Marker
+                coordinate={marker.coordinate}
+                title={marker.title} // Display lat and lon as title
+              />
+            )}
+            {userLocation && ( // Render user's current location
+              <Marker
+                coordinate={userLocation}
+                title="My Location"
+                pinColor="blue" // Change color for user location marker
+              />
+            )}
+            
+            {route && (
+              <Polyline
+                coordinates={route}
+                strokeColor="#4169E1"
+                //strokeColor="#0000FF"
+                strokeWidth={6}
+              />
+            )}
+          </MapView>
+        )}
 
         {tileError && (
           <View style={styles.errorContainer}>

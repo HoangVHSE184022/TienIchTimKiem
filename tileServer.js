@@ -23,11 +23,32 @@ new MBTiles(mbtilesPath, (err, mbtiles) => {
       console.log(JSON.stringify(info, null, 2));
     }
 
-    // Add a new endpoint to get zoom levels
     app.get('/zoom-levels', (req, res) => {
       res.json({
         minZoom: info.minzoom || 0,
         maxZoom: info.maxzoom || 23
+      });
+    });
+
+    app.get('/initial-region', (req, res) => {
+      mbtiles.getInfo((err, info) => {
+        if (err) {
+          console.error('Error getting MBTiles info:', err);
+          return res.status(500).json({ error: 'Unable to retrieve MBTiles info' });
+        }
+    
+        const center = info.center || [0, 0];
+        const zoom = info.minzoom || 0;
+    
+        const latitudeDelta = 360 / Math.pow(2, zoom) * 0.5;
+        const longitudeDelta = 360 / Math.pow(2, zoom) * 0.5;
+    
+        res.json({
+          latitude: center[1],
+          longitude: center[0],
+          latitudeDelta: latitudeDelta,
+          longitudeDelta: longitudeDelta,
+        });
       });
     });
 
