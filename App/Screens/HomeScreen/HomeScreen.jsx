@@ -48,7 +48,7 @@ const HomeScreen = ({ navigation }) => {
             onPress={() => navigation.navigate('Error', { message: 'Trang này chưa có content' })}  // Thay thế bằng tên màn hình
           >
             <Image
-            source={require('../../assets/iconBanDoCaNhan.png')}
+            source={require('../../assets/iconAbout.png')}
             style={styles.image}
             />
             <Text style={styles.cardText}>Chưa có content</Text>
