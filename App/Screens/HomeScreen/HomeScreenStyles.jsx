@@ -4,7 +4,7 @@ import { StyleSheet, Dimensions } from 'react-native';
 const { width, height } = Dimensions.get('window');
 
 const CARD_WIDTH = width * 0.4;  // Chiều rộng mỗi thẻ là 40% chiều rộng màn hình
-const CARD_HEIGHT = height * 0.4; // Chiều cao mỗi thẻ là 40% chiều cao màn hình
+const CARD_HEIGHT = height * 0.25; // Chiều cao mỗi thẻ là 40% chiều cao màn hình
 
 const styles = StyleSheet.create({
   container: {

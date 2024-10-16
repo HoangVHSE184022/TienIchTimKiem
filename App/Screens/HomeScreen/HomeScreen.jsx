@@ -45,6 +45,29 @@ const HomeScreen = ({ navigation }) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.card}
+            onPress={() => navigation.navigate('Error', { message: 'Trang này chưa có content' })}  // Thay thế bằng tên màn hình
+          >
+            <Image
+            source={require('../../assets/iconAbout.png')}
+            style={styles.image}
+            />
+            <Text style={styles.cardText}>Chưa có content</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.row}>
+        <TouchableOpacity
+            style={styles.card}
+            onPress={() => navigation.navigate('Tìm kiếm thuốc')}
+          >
+            <Image
+            source={require('../../assets/iconMedicine.png')}
+            style={styles.image}
+            />
+            <Text style={styles.cardText}>Tìm kiếm thuốc</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.card}
             onPress={() => navigation.navigate('Về chúng tôi')}  // Điều hướng tới trang "About Us"
           >
             <Image

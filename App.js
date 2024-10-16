@@ -16,6 +16,7 @@ import ChangePassword from './App/Screens/ChangePassword/ChangePassword';
 import Map from './App/Screens/Map/Map';
 import ErrorScreen from './App/Screens/Error/Error';
 import Cemetery from './App/Screens/Cemetery/Cemetery';
+import Medicine from './App/Screens/Medicine/Medicine';
 import { DatabaseProvider } from './App/Database/DatabaseContext';
 import 'react-native-gesture-handler';
 
@@ -87,6 +88,9 @@ export default function App() {
 
           {/* Trang Nghĩa trang liệt sĩ */}
           <Drawer.Screen name="Nghĩa trang liệt sĩ" component={Cemetery} />
+
+          {/* Trang Tìm kiếm thuốc */}
+          <Drawer.Screen name="Tìm kiếm thuốc" component={Medicine} />
 
           {/* Trang Bản đồ cá nhân */}
           <Drawer.Screen
